@@ -1,6 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\AttendanceController;
+use App\Http\Controllers\Api\SchoolClassController;
+use App\Http\Controllers\Api\StudentController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -12,3 +14,9 @@ Route::get('/ping', function () {
         'message' => 'API Laravel berhasil terhubung',
     ]);
 });
+
+Route::apiResource('classes', SchoolClassController::class);
+Route::apiResource('students', StudentController::class);
+
+Route::post('attendances/bulk', [AttendanceController::class, 'bulkStore']);
+Route::apiResource('attendances', AttendanceController::class);
