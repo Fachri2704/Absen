@@ -1,36 +1,65 @@
-import { useEffect, useState } from 'react'
-import { api } from './lib/api'
+import { useState } from 'react'
+import { DashboardLayout } from './components/layout/DashboardLayout'
+import { AttendancePage } from './pages/AttendancePage'
+import { ClassesPage } from './pages/ClassesPage'
+import { DashboardPage } from './pages/DashboardPage'
+import { PlaceholderPage } from './pages/PlaceholderPage'
+import { StudentsPage } from './pages/StudentsPage'
+import type { PageKey } from './types/navigation'
 
 function App() {
-  const [message, setMessage] = useState<string>('Loading...')
+  const [activePage, setActivePage] = useState<PageKey>('dashboard')
 
-  useEffect(() => {
-    api
-      .get('/ping')
-      .then((response) => {
-        setMessage(response.data.message)
-      })
-      .catch(() => {
-        setMessage('Gagal konek ke API Laravel')
-      })
-  }, [])
+  function renderPage() {
+    if (activePage === 'dashboard') {
+      return <DashboardPage />
+    }
+
+    if (activePage === 'classes') {
+      return <ClassesPage />
+    }
+
+    if (activePage === 'students') {
+      return <StudentsPage />
+    }
+
+    if (activePage === 'attendance') {
+      return <AttendancePage />
+    }
+
+    if (activePage === 'recap') {
+      return (
+        <PlaceholderPage
+          description="Rekap absensi per kelas dan per siswa akan kita isi setelah fitur input absensi stabil."
+          icon="activity"
+          title="Rekap Absensi"
+        />
+      )
+    }
+
+    if (activePage === 'reports') {
+      return (
+        <PlaceholderPage
+          description="Export PDF dan Excel masuk ke Versi 2, jadi halaman laporan sudah disiapkan tempatnya."
+          icon="file"
+          title="Laporan"
+        />
+      )
+    }
+
+    return (
+      <PlaceholderPage
+        description="Pengaturan sekolah, role, dan akun akan lebih masuk akal setelah login Sanctum kita pasang."
+        icon="gear"
+        title="Pengaturan"
+      />
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-xl shadow">
-        <h1 className="text-3xl font-bold text-slate-800">
-          Absensi Siswa App
-        </h1>
-
-        <p className="mt-4 text-slate-600">
-          Response dari backend:
-        </p>
-
-        <p className="mt-2 font-semibold text-green-600">
-          {message}
-        </p>
-      </div>
-    </div>
+    <DashboardLayout activePage={activePage} onNavigate={setActivePage}>
+      {renderPage()}
+    </DashboardLayout>
   )
 }
 
