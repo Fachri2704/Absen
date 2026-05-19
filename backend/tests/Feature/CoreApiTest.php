@@ -78,4 +78,15 @@ class CoreApiTest extends TestCase
             'status' => 'Sakit',
         ]);
     }
+
+    public function test_class_level_and_major_must_use_available_options(): void
+    {
+        $this->postJson('/api/classes', [
+            'name' => 'X XXX 1',
+            'level' => 'XXX',
+            'major' => 'XXX',
+        ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['level', 'major']);
+    }
 }

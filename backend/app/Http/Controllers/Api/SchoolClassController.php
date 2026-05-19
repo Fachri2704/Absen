@@ -6,9 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\SchoolClass;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SchoolClassController extends Controller
 {
+    private const LEVELS = ['X', 'XI', 'XII'];
+
+    private const MAJORS = ['RPL', 'TKJ', 'AKL', 'DKV', 'MPLB', 'PM', 'TKR'];
+
     public function index(): JsonResponse
     {
         $classes = SchoolClass::withCount('students')
@@ -24,8 +29,8 @@ class SchoolClassController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'level' => ['required', 'string', 'max:255'],
-            'major' => ['required', 'string', 'max:255'],
+            'level' => ['required', Rule::in(self::LEVELS)],
+            'major' => ['required', Rule::in(self::MAJORS)],
         ]);
 
         $class = SchoolClass::create($validated);
@@ -50,8 +55,8 @@ class SchoolClassController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'level' => ['required', 'string', 'max:255'],
-            'major' => ['required', 'string', 'max:255'],
+            'level' => ['required', Rule::in(self::LEVELS)],
+            'major' => ['required', Rule::in(self::MAJORS)],
         ]);
 
         $class->update($validated);

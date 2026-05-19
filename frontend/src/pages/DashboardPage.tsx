@@ -168,7 +168,7 @@ export function DashboardPage() {
         <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
           <h3 className="text-lg font-bold text-slate-950">Distribusi Hari Ini</h3>
           <p className="text-sm text-slate-500">
-            Warna dibuat soft supaya guru gampang scan status.
+            {/* Warna dibuat soft supaya guru gampang scan status. */}
           </p>
 
           <div className="mt-6 space-y-4">

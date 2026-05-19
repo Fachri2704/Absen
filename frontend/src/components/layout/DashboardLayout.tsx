@@ -1,35 +1,39 @@
 import type { ReactNode } from 'react'
-import { Icon, type IconName } from '../icons/Icon'
+import { Icon } from '../icons/Icon'
 import { formatLongDate } from '../../utils/date'
 import { pageTitles, type PageKey } from '../../types/navigation'
+import { navItemsByRole } from '../../constants/navigation'
+import { roleDescriptions, roleLabels, type UserRole } from '../../types/role'
 
 type DashboardLayoutProps = {
   activePage: PageKey
   children: ReactNode
   onNavigate: (page: PageKey) => void
+  onRoleChange: (role: UserRole) => void
+  role: UserRole
 }
 
-type NavItem = {
-  key: PageKey
-  label: string
-  icon: IconName
+const roleInitials: Record<UserRole, string> = {
+  admin: 'AD',
+  teacher: 'GR',
+  student: 'SW',
 }
 
-const navItems: NavItem[] = [
-  { key: 'dashboard', label: 'Dashboard', icon: 'home' },
-  { key: 'classes', label: 'Data Kelas', icon: 'book' },
-  { key: 'students', label: 'Data Siswa', icon: 'users' },
-  { key: 'attendance', label: 'Absensi', icon: 'clipboard' },
-  { key: 'recap', label: 'Rekap', icon: 'activity' },
-  { key: 'reports', label: 'Laporan', icon: 'file' },
-  { key: 'settings', label: 'Pengaturan', icon: 'gear' },
-]
+const roleNames: Record<UserRole, string> = {
+  admin: 'Admin Sekolah',
+  teacher: 'Guru Piket',
+  student: 'Siswa',
+}
 
 export function DashboardLayout({
   activePage,
   children,
   onNavigate,
+  onRoleChange,
+  role,
 }: DashboardLayoutProps) {
+  const navItems = navItemsByRole[role]
+
   return (
     <div className="min-h-screen bg-[var(--background)] text-slate-950">
       <div className="flex min-h-screen flex-col lg:flex-row">
@@ -68,15 +72,15 @@ export function DashboardLayout({
             })}
           </nav>
 
-          {/* <div className="mt-8 hidden rounded-3xl bg-slate-950 p-5 text-white lg:block">
+          <div className="mt-8 hidden rounded-3xl bg-slate-950 p-5 text-white lg:block">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10">
               <Icon className="h-5 w-5" name="spark" />
             </div>
-            <p className="mt-4 text-sm font-semibold">Versi 1 Basic</p>
+            <p className="mt-4 text-sm font-semibold">Mode {roleLabels[role]}</p>
             <p className="mt-2 text-sm leading-6 text-slate-300">
-              Fokus sekarang: data kelas, data siswa, dan input absensi manual.
+              {roleDescriptions[role]}
             </p>
-          </div> */}
+          </div>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
@@ -92,6 +96,19 @@ export function DashboardLayout({
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <label className="flex items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-700">
+                  <span>Role</span>
+                  <select
+                    className="bg-transparent text-sm font-bold outline-none"
+                    onChange={(event) => onRoleChange(event.target.value as UserRole)}
+                    value={role}
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="teacher">Guru</option>
+                    <option value="student">Siswa</option>
+                  </select>
+                </label>
+
                 <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
                   <Icon className="h-4 w-4 text-blue-600" name="calendar" />
                   <span>{formatLongDate()}</span>
@@ -99,13 +116,13 @@ export function DashboardLayout({
 
                 <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-2">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
-                    AS
+                    {roleInitials[role]}
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-950">
-                      Admin Sekolah
+                      {roleNames[role]}
                     </p>
-                    <p className="text-xs text-slate-500">Guru piket</p>
+                    <p className="text-xs text-slate-500">{roleLabels[role]}</p>
                   </div>
                 </div>
               </div>

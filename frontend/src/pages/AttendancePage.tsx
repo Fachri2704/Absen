@@ -238,7 +238,7 @@ export function AttendancePage() {
               {selectedClass?.name ?? 'Pilih kelas dulu'}
             </h3>
             <p className="text-sm text-slate-500">
-              Tanggal {formatShortDate(selectedDate)} • {students.length} siswa
+              Tanggal {formatShortDate(selectedDate)} - {students.length} siswa
             </p>
           </div>
 
@@ -274,7 +274,7 @@ export function AttendancePage() {
                   <div className="min-w-0">
                     <p className="font-bold text-slate-950">{student.name}</p>
                     <p className="mt-1 text-sm text-slate-500">
-                      NIS {student.nis} • {student.school_class?.name ?? selectedClass?.name}
+                      NIS {student.nis} - {student.school_class?.name ?? selectedClass?.name}
                     </p>
                   </div>
 

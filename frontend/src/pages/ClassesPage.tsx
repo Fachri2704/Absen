@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Alert } from '../components/ui/Alert'
 import { EmptyState } from '../components/ui/EmptyState'
+import { classLevelOptions, classMajorOptions } from '../constants/schoolClass'
 import { getApiErrorMessage } from '../lib/api'
 import {
   createClass,
@@ -16,7 +17,11 @@ const emptyForm: SchoolClassPayload = {
   major: '',
 }
 
-export function ClassesPage() {
+type ClassesPageProps = {
+  readonly?: boolean
+}
+
+export function ClassesPage({ readonly = false }: ClassesPageProps) {
   const [classes, setClasses] = useState<SchoolClass[]>([])
   const [form, setForm] = useState<SchoolClassPayload>(emptyForm)
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -118,84 +123,111 @@ export function ClassesPage() {
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
-      <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-        <h3 className="text-lg font-bold text-slate-950">
-          {editingId ? 'Edit Kelas' : 'Tambah Kelas'}
-        </h3>
-        <p className="mt-1 text-sm text-slate-500">
-          Simpan data kelas sebagai dasar pengelompokan siswa.
-        </p>
+    <div className={readonly ? 'grid gap-6' : 'grid gap-6 xl:grid-cols-[0.8fr_1.2fr]'}>
+      {readonly ? (
+        <section className="rounded-3xl border border-blue-100 bg-blue-50 p-6 text-blue-800">
+          <h3 className="text-lg font-bold">Kelas yang Diajar</h3>
+          <p className="mt-2 text-sm leading-6">
+            Untuk sementara, karena relasi guru-kelas belum ada di database, Guru
+            melihat daftar semua kelas. Nanti setelah tabel guru dan mapping kelas
+            dibuat, list ini bisa otomatis dibatasi ke kelas yang diajar.
+          </p>
+        </section>
+      ) : (
+        <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+          <h3 className="text-lg font-bold text-slate-950">
+            {editingId ? 'Edit Kelas' : 'Tambah Kelas'}
+          </h3>
+          <p className="mt-1 text-sm text-slate-500">
+            Simpan data kelas sebagai dasar pengelompokan siswa.
+          </p>
 
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-          <label className="block">
-            <span className="text-sm font-semibold text-slate-700">Nama kelas</span>
-            <input
-              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
-              onChange={(event) =>
-                setForm((current) => ({ ...current, name: event.target.value }))
-              }
-              placeholder="Contoh: X RPL 1"
-              required
-              value={form.name}
-            />
-          </label>
-
-          <div className="grid gap-4 sm:grid-cols-2">
+          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             <label className="block">
-              <span className="text-sm font-semibold text-slate-700">Tingkat</span>
+              <span className="text-sm font-semibold text-slate-700">Nama kelas</span>
               <input
                 className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                 onChange={(event) =>
-                  setForm((current) => ({ ...current, level: event.target.value }))
+                  setForm((current) => ({ ...current, name: event.target.value }))
                 }
-                placeholder="X / XI / XII"
+                placeholder="Contoh: X RPL 1"
                 required
-                value={form.level}
+                value={form.name}
               />
             </label>
 
-            <label className="block">
-              <span className="text-sm font-semibold text-slate-700">Jurusan</span>
-              <input
-                className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, major: event.target.value }))
-                }
-                placeholder="RPL / TKJ / AKL"
-                required
-                value={form.major}
-              />
-            </label>
-          </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block">
+                <span className="text-sm font-semibold text-slate-700">Tingkat</span>
+                <select
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, level: event.target.value }))
+                  }
+                  required
+                  value={form.level}
+                >
+                  <option value="">Pilih tingkat</option>
+                  {classLevelOptions.map((level) => (
+                    <option key={level} value={level}>
+                      {level}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-          {error ? <Alert message={error} tone="danger" /> : null}
-          {message ? <Alert message={message} tone="success" /> : null}
+              <label className="block">
+                <span className="text-sm font-semibold text-slate-700">Jurusan</span>
+                <select
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, major: event.target.value }))
+                  }
+                  required
+                  value={form.major}
+                >
+                  <option value="">Pilih jurusan</option>
+                  {classMajorOptions.map((major) => (
+                    <option key={major} value={major}>
+                      {major}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <button
-              className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-100 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={isSubmitting}
-              type="submit"
-            >
-              {isSubmitting ? 'Menyimpan...' : editingId ? 'Update Kelas' : 'Simpan Kelas'}
-            </button>
+            {error ? <Alert message={error} tone="danger" /> : null}
+            {message ? <Alert message={message} tone="success" /> : null}
 
-            {editingId ? (
+            <div className="flex flex-col gap-3 sm:flex-row">
               <button
-                className="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50"
-                onClick={() => {
-                  setEditingId(null)
-                  setForm(emptyForm)
-                }}
-                type="button"
+                className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-100 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isSubmitting}
+                type="submit"
               >
-                Batal Edit
+                {isSubmitting
+                  ? 'Menyimpan...'
+                  : editingId
+                    ? 'Update Kelas'
+                    : 'Simpan Kelas'}
               </button>
-            ) : null}
-          </div>
-        </form>
-      </section>
+
+              {editingId ? (
+                <button
+                  className="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50"
+                  onClick={() => {
+                    setEditingId(null)
+                    setForm(emptyForm)
+                  }}
+                  type="button"
+                >
+                  Batal Edit
+                </button>
+              ) : null}
+            </div>
+          </form>
+        </section>
+      )}
 
       <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -222,7 +254,9 @@ export function ClassesPage() {
                   <th className="px-4 py-3 font-semibold">Tingkat</th>
                   <th className="px-4 py-3 font-semibold">Jurusan</th>
                   <th className="px-4 py-3 font-semibold">Siswa</th>
-                  <th className="px-4 py-3 font-semibold">Aksi</th>
+                  {readonly ? null : (
+                    <th className="px-4 py-3 font-semibold">Aksi</th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -236,24 +270,26 @@ export function ClassesPage() {
                     <td className="px-4 py-4 text-slate-600">
                       {schoolClass.students_count ?? 0}
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="flex gap-2">
-                        <button
-                          className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700"
-                          onClick={() => handleEdit(schoolClass)}
-                          type="button"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="rounded-full bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700"
-                          onClick={() => void handleDelete(schoolClass)}
-                          type="button"
-                        >
-                          Hapus
-                        </button>
-                      </div>
-                    </td>
+                    {readonly ? null : (
+                      <td className="px-4 py-4">
+                        <div className="flex gap-2">
+                          <button
+                            className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700"
+                            onClick={() => handleEdit(schoolClass)}
+                            type="button"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="rounded-full bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700"
+                            onClick={() => void handleDelete(schoolClass)}
+                            type="button"
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
